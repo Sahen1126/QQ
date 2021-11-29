@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <!-- https://lonekorean.github.io/highlight-within-textarea/ -->
+    <link href="./jquery.highlight-within-textarea.css" rel="stylesheet">
+
+    <style>
+        textarea#txt {
+            width: 500px;
+            height: 500px;
+            color: indigo;
+        }
+
+        audio#text_to_speech{
+            display: none;
+        }
+
+        .yellow {
+            background-color: #bbbbbb;
+        }
+    </style>
+</head>
+<body>
+    <!-- https://www.w3schools.com/tags/ref_av_dom.asp -->
+    <audio id="text_to_speech" controls autoplay>
+        <source src="" type="audio/mpeg">
+        您的瀏覽器不支援 audio 元素
+    </audio>
+
+    <!-- 席慕蓉: https://kknews.cc/zh-tw/culture/nm6yb2.html -->
+    <textarea id="txt" style="background-color: gray;border-radius:20px;border: indigo;"></textarea>
+
+    <button id="btn_play" style="color: blue;background-color: rgb(184, 184, 184);border-radius: 5px;">播放</button>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- 參考網址: https://lonekorean.github.io/highlight-within-textarea/ -->
+    <script src="./jquery.highlight-within-textarea.js"></script>
+
+    <script>
+        let arr;
+        let index = 0 ;
+        let txt = $('textarea#txt');
+        document.querySelector('textarea#txt').addEventListener('focusout',function(event){
+            let content = document.querySelector('textarea#txt').value;
+            let regex = /\n|,|\.|，|。|　/;
+            arr = content.split(regex);
+
+            for(let key in arr){
+                if(arr[key] == '')delete arr[key];
+            }
+            let arrTmp = [];
+            for(let value of arr){
+                if(value !== undefined) arrTmp.push(value);
+            }
+            arr=arrTmp;
+
+        });
+        function getAudio(idx){
+            $.post("https://darreninfo.cc/tts/sound.php",{q:arr[idx]},function(objJson){
+                console.log(objJson);
+                if(objJson['success']){
+                    let audio = document.querySelector('audio#text_to_speech');
+
+                    audio.querySelector('source').setAttribute('src',objJson['link']);
+                    audio.load();
+                    audio.play();
+
+                    txt.highlightWithinTextarea({
+                        highlight: [{
+                            highlight: arr[idx],
+                            className: 'yellow',
+                        }]
+                    });
+                    
+                    
+
+
+                }
+            })
+        }
+        document.querySelector('button#btn_play').addEventListener('click',function(event){
+            getAudio(index);
+        });
+        document.querySelector('audio#text_to_speech').addEventListener('ended',function(event){
+            index++;
+            getAudio(index);
+            // if(arr[index] !=)
+        })
+
+
+
+
+
+    </script>
+</body>
+</html>

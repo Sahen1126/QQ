@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn" style="width: 100px; height: 50px;">連點兩下: 0</button>
+
+    <script>
+        let count = 0;
+        let width = 100;
+        let height = 50;
+        
+        function color(){
+            let r,g,b;
+            r = Math.floor(Math.random()*255);
+            g = Math.floor(Math.random()*255);
+            b = Math.floor(Math.random()*255);
+            return 'rgba('+ r +','+ g +','+ b +',0.8)';
+
+        }
+  
+
+        document.querySelector('button#btn').addEventListener('dblclick',function(){
+            count += 1;
+            width += 30;
+            height +=30;
+            this.innerText = '連點兩下: ' + count;
+            this.style.width = width + 'px';
+            this.style.height = height + 'px';
+            this.style.backgroundColor = color();
+        })
+
+
+    </script>
+</body>
+</html>

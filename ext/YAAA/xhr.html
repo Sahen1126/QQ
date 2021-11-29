@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <!-- 選擇上傳檔案的元素 -->
+     <h3>請選擇所要上傳的檔案</h3>
+     <input type="file" name="fileUpload[]" id="files" multiple />
+ 
+     <br> 
+ 
+     <progress id="p" value="0" max="100" style="width: 500px; height: 50px"></progress> 
+ 
+     <br> 
+     
+     <div id="msg"></div> 
+     <script>
+         document.querySelector('input#files').addEventListener('change',uploadFile);
+
+         function uploadFile(){
+             
+             let progressBar = document.querySelector('progress#p');
+
+             let myFile = document.querySelector('input#files').files[0];
+
+             let div = document.querySelector('div#msg');
+             let xhr = new XMLHttpRequest();
+             xhr.open('post','https://httpbin.org/post');
+             xhr.setRequestHeader("Content-Type","multipart/form-data");
+             let formdata = new FormData();
+             formdata.append("myFile",myFile);
+
+             xhr.upload.onprogress = function(event) { 
+            let percent = (event.loaded / event.total) * 100;
+
+                 div.onnerHTML = percent + '%';
+
+                 progressBar.max = event.total;
+                 progressBar.value = event.loaded;
+             };
+             xhr.send(formdata);
+
+             xhr.onload = function(){console.log('連線完成');}
+
+             xhr.onloadend = function(event){console.log('上傳結束')
+             ;}
+
+
+         }
+     </script>
+</body>
+</html>

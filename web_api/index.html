@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+    <title>Document</title>
+    <style>
+        table, thead, th, tbody, tr, td {
+            border: 1px solid;
+        }
+
+        #map { height: 480px; }
+    </style>
+</head>
+<body>
+    <button id="btn_request">取得臺北市咖啡廳列表</button>
+
+    <div id="map"></div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>city</th>
+                <th>name</th>
+                <th>address</th>
+                <th>url</th>
+                <th>socket</th>
+                <th>latitude</th>
+                <th>longitude</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+
+
+
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script>
+            let map = L.map('map').setView([25.1012679,121.5463832,17], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let layerGroup = null;
+    let arrLayers = [];
+        
+        document.querySelector('button#btn_request').addEventListener('click',function(event){
+            fetch('https://darreninfo.cc/web_api_coffee.php',{
+                method: "GET"
+            }).then(function(response){
+                return response.json();
+            }).then(function(arr){
+                let tbody = document.querySelector('table >tbody');
+                for(let o of arr){
+                    if(o['socket'] !== 'yes')continue;
+                let tr = document.createElement("tr");
+                tr.innerHTML = `<td>${o['id']}</td>
+                                <td>${o['city']}</td>
+                                <td>${o['name']}</td>
+                                <td>${o['address']}</td>
+                                <td><a href="${o['url']}" target="_blank">連結</a></td>
+                                <td>${o['socket']}</td>
+                                <td>${o['latitude']}</td>
+                                <td>${o['longitude']}</td>`;
+                tbody.appendChild(tr);
+
+                // let marker = L.marker([25.1012679,121.5463832,17]).addTo(map)
+                // .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+                // .openPopup();
+                let marker = L.marker([o['latitude'], o['longitude']])
+                .bindPopup(o['name'])
+                .openPopup();
+
+                //將 markers 各別放到空陣列 arrLayers 當中
+                arrLayers.push(marker);
+                }
+                layerGroup = L.layerGroup(arrLayers);
+
+            //將 layerGroup 放到 map 當中
+            layerGroup.addTo(map);
+            })
+                
+        })
+    </script>    
+</body>
+</html>

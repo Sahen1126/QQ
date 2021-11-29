@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form name="myForm" 
+        action="" 
+        method="POST" 
+        enctype="multipart/form-data">
+        <!-- 補充: 不會夾帶檔案上傳時的設定 enctype="application/x-www-form-urlencoded" -->
+
+        <!-- 選擇上傳檔案的元素 -->
+        <h3>請選擇所要上傳的檔案</h3>
+        <input type="file" name="fileUpload[]" id="files" multiple />
+        
+    </form>
+
+    <!-- 模擬點擊選擇上傳檔案的元素 -->
+    <!-- <a href="#" id="selectFiles">選擇檔案</a> -->
+
+    <!-- 水平線 -->
+    <hr />
+
+    <!-- 放置多張圖片的元素容器 -->
+    <ul id="myList"></ul>
+    <script>
+           document.querySelector('input#files').addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(evt){
+            let files = evt.target.files;
+
+            let myList = document.querySelector('ul#myList');
+
+            for(let file of files){
+                if (!file.type.match('^image')){
+                    continue;
+                }
+                let reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function(event){
+                    let li = document.createElement('li');
+
+                    li.innerHTML = `<img class="thumb" src="${event.target.result}"tittle="${file.name}"/>`;
+                    myList.appendChild(li);
+                };
+            }
+        }
+        document.querySelector('a#selectFiles').addEventListener('click',function(event){
+            event.preventDefault();
+            document.querySelector('input#files').click();
+        });
+    </script>
+</body>
+</html>
